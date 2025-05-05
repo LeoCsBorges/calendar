@@ -2,6 +2,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import ProgressIcon from "@/public/progress-check-icon.png"
+import CalendarIcon from "@/public/calendar-icon.png"
+import ClockIcon from "@/public/clock-icon.png"
 
 const weekdays = [
     {key: 1, day: 'Dom'},
@@ -53,7 +55,7 @@ const Checkbox = ({ index, checked, onChange, disabled }) => {
     );
 };
 
-const CheckboxList = ({checkedStates, setCheckedStates}) => {
+const CheckboxList = ({checkedStates, setCheckedStates, setLastChecked}) => {
     const handleCheckboxChange = (index) => {
       const currentItem = checkedStates[index];
 
@@ -81,6 +83,7 @@ const CheckboxList = ({checkedStates, setCheckedStates}) => {
         date: new Date().toISOString(),
       };
       setCheckedStates(updatedStates);
+      setLastChecked(updatedStates[index]);
     };
 
     return (
@@ -109,9 +112,29 @@ const CheckboxProgress = ({progressPercentage}) => {
     );
 };
 
+const LastChecked = ({lastChecked}) => {
+    const localDate = (lastChecked ? new Date(lastChecked).toLocaleDateString('pt-BR') : '')
+    const localTime = (lastChecked ? new Date(lastChecked).toLocaleTimeString('pt-BR') : '')
+    
+    return (
+        <div className="text-slate-800">
+            <h3 className="text-[1.25em] font-semibold border-b border-slate-200 mb-3">
+                Última marcação
+            </h3>
+            <div className="flex gap-1 items-center mb-1">
+                <img className="w-5 h-auto" src={CalendarIcon.src} alt="Calendar Icon" />:
+                <p>{localDate}</p>
+            </div>
+            <div className="flex gap-1 items-center">
+                <img className="w-5 h-auto" src={ClockIcon.src} alt="Clock Icon" />:
+                <p>{localTime}</p>
+            </div>
+        </div>
+    )
+}
 
 // [CALENDAR ]
-const CalendarSideMenu = ({progressPercentage}) => {
+const CalendarSideMenu = ({progressPercentage, lastChecked}) => {
     const actualWeekday = new Date().toLocaleDateString('pt-BR', {weekday: "long"});
     const actualDayAndMonth = new Date().toLocaleDateString('pt-BR', {day: "numeric", month: "long"});
 
@@ -125,16 +148,15 @@ const CalendarSideMenu = ({progressPercentage}) => {
                     <span className="capitalize">{actualWeekday}</span>,<br/>{actualDayAndMonth}
                 </h2>
             </header>
-            <div className="grow">
-                <div className="h-full flex flex-col justify-end">
-                    <CheckboxProgress progressPercentage={progressPercentage} />
-                </div>
+            <div className="grow flex flex-col justify-center">
+                <LastChecked lastChecked={lastChecked.date} />
             </div>
+            <CheckboxProgress progressPercentage={progressPercentage} />
         </div>
     );
 };
 
-const CalendarContent = ({checkedStates, setCheckedStates}) => {
+const CalendarContent = ({checkedStates, setCheckedStates, setLastChecked}) => {
     const actualMonth = new Date().toLocaleDateString('pt-BR', {month: "long"});
     const actualYear = new Date().getFullYear();
     
@@ -159,7 +181,7 @@ const CalendarContent = ({checkedStates, setCheckedStates}) => {
             </header>
             <section className="">
                 <CalendarWeekdaysTitles /> 
-                <CheckboxList checkedStates={checkedStates} setCheckedStates={setCheckedStates} /> {/* dias do mes  */}
+                <CheckboxList checkedStates={checkedStates} setCheckedStates={setCheckedStates} setLastChecked={setLastChecked} />
             </section>
         </div>
     );
@@ -167,6 +189,7 @@ const CalendarContent = ({checkedStates, setCheckedStates}) => {
 
 export default function Calendar() {
     const [checkedStates, setCheckedStates] = useState(Array(31).fill({checked: false, date: null}));
+    const [lastChecked, setLastChecked] = useState({});
     const [progressPercentage, setProgressPercentage] = useState(0);
     const percentagePerDay = (100 / checkedStates.length);
 
@@ -178,8 +201,8 @@ export default function Calendar() {
 
     return (
         <div className="flex rounded-4xl border border-gray-100 shadow-md overflow-hidden">
-            <CalendarSideMenu progressPercentage={progressPercentage} />
-            <CalendarContent checkedStates={checkedStates} setCheckedStates={setCheckedStates} />
+            <CalendarSideMenu lastChecked={lastChecked} progressPercentage={progressPercentage} />
+            <CalendarContent checkedStates={checkedStates} setCheckedStates={setCheckedStates} setLastChecked={setLastChecked}/>
         </div>
     );
 };
