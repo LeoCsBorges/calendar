@@ -1,7 +1,7 @@
-import Checkboxes from "@/components/Checkboxes";
+import Calendar from "@/components/Calendar";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import Image from "next/image";
+// import Image from "next/image";
 
 export default function Home() {
 
@@ -12,7 +12,7 @@ export default function Home() {
         <h2 className="text-lg md:text-xl mb-4">
           Marque o seu progresso:
         </h2>
-        <Checkboxes />
+        <Calendar />
       </main>
       <Footer />
     </div>

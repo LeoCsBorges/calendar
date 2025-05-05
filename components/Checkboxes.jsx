@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 
+//functions
 function isAnotherDay(storedDateISOString) {
   const storedDate = new Date(storedDateISOString);
   const today = new Date();
@@ -11,6 +12,8 @@ function isAnotherDay(storedDateISOString) {
 
   return storedLocal !== todayLocal;
 }
+
+//components
 
 const Checkbox = ({ index, checked, onChange, disabled }) => {
     return (
@@ -40,7 +43,15 @@ const Checkbox = ({ index, checked, onChange, disabled }) => {
     );
 };
 
-const CheckboxList = () => {
+const CheckboxProgress = ({progress}) => {
+  return (
+    <p>
+      seu progresso eh {progress}
+    </p>
+  )
+}
+
+export const CheckboxList = () => {
     const [checkedStates, setCheckedStates] = useState(Array(31).fill({checked: false, date: null}));
     const [progressPercentage, setProgressPercentage] = useState(0);
     const percentagePerDay = (100 / checkedStates.length);
@@ -82,23 +93,24 @@ const CheckboxList = () => {
     }, [checkedStates]);
 
     return (
-        <>
-            <div className="grid grid-cols-7 p-4">
-                {checkedStates.map((item, index) => (
-                    <Checkbox
-                        key={index}
-                        index={index}
-                        checked={item.checked}
-                        disabled={index > 0 && !checkedStates[index - 1].checked}
-                        onChange={handleCheckboxChange}
-                    />
-                ))}
-            </div>
-            <div className="mt-10">
-                <p className="w-max mx-auto p-2 text-md border border-slate-200 rounded-lg"> Seu progresso está em: <span className="text-blue-600 font-semibold">{progressPercentage}%</span></p>
-            </div>
-        </>
+      <>
+        <div className="grid grid-cols-7">
+          {checkedStates.map((item, index) => (
+            <Checkbox
+              key={index}
+              index={index}
+              checked={item.checked}
+              disabled={index > 0 && !checkedStates[index - 1].checked}
+              onChange={handleCheckboxChange}
+            />
+          ))}
+        </div>
+        <div className="mt-10">
+          <p className="w-max mx-auto p-2 text-md border border-slate-200 rounded-lg"> 
+            Seu progresso está em: 
+            <span className="text-blue-600 font-semibold">{progressPercentage}%</span>
+          </p>
+        </div>
+      </>
     );
 };
-
-export default CheckboxList;
